@@ -1,0 +1,26 @@
+{
+  "name": "gawati-viewer-service",
+  "version": "1.0.0",
+  "description": "Viewer service for Gawati viewer client",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/bungenicom/gawati/gawati-viewer-service.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bluebird": "^3.5.1",
+    "express": "~4.16.2",
+    "query-string": "^6.1.0",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "jslint": "^0.12.0",
+    "mammoth": "^1.4.6"
+  }
+}

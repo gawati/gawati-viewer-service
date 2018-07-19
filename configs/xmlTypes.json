@@ -1,0 +1,11 @@
+{
+	"docbook":{
+		"path": "configs/xslt/docbook.xslt"
+	},
+	"akomantoso":{
+		"path": "configs/xslt/akomantoso.xslt"
+	},
+	"xml":{
+		"path": "configs/xslt/sample.xslt"
+	}
+}
