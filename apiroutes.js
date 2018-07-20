@@ -14,7 +14,7 @@ const appconstants = require('./constants.js');
 /**
  * Log level
  */
-winston.level = process.env.LOG_LEVEL || 'error' ;
+winston.level = process.env.LOG_LEVEL || 'debug' ;
 
 var router = express.Router();
 
@@ -32,8 +32,8 @@ router.get('/docxTohtml', (req, res, next) => {
 
 router.get('/xmlToHtml',(req, res, next) => { 
   let configJSONPath = path.join(
-    appconstants.CONFIG_FOLDER, 
-    appconstants.XML_TYPES_JSON
+    "configs", 
+    "xmlTypes.json"
   );  
   
   //Get XML that contains metadata
@@ -59,7 +59,8 @@ router.get('/xmlToHtml',(req, res, next) => {
           let xml = response.data;     
           
           // Get configuration for the service that converts XML to HTML
-          axios.get('/gwp/gawati.json').then(response => {      
+          // TODO Why doesn't /gwv/gawati.json work?
+          axios.get('http://localhost:9005/gwv/gawati.json').then(response => {      
             
             // Send XML for conversion to service
             axios({
