@@ -19,7 +19,7 @@ winston.level = process.env.LOG_LEVEL || 'debug' ;
 var router = express.Router();
 
 router.get('/docxTohtml', (req, res, next) => {
-  let url = encodeURI(req.query.docxLink);
+  let url = encodeURI(req.query.docLink);
   axios.get(url,{responseType: 'arraybuffer'}).then(response => {
     mammoth.convertToHtml(response.data)
     .then(function(result){
@@ -31,66 +31,58 @@ router.get('/docxTohtml', (req, res, next) => {
 });
 
 router.get('/xmlToHtml',(req, res, next) => { 
+  
+  let attachmentUrl = encodeURI(req.query.docLink);
+  let xmlType = "sample"; // Will be later inferred from XML structure
+  
   let configJSONPath = path.join(
     "configs", 
     "xmlTypes.json"
   );  
-  
-  //Get XML that contains metadata
-  axios.get(appconstants.API_DOC,{
-    params : {
-      iri : req.query.iri
-    }
-  }).then(response => {    
-    let xmlType = response.data.akomaNtoso.act.meta.proprietary.gawati.embeddedContents.embeddedContent.type;
-    let url = encodeURI(req.query.xmlLink);
+  //Get XSLT config file location
+  let xsltConfig = '';
+  fs.readFile(configJSONPath, 'utf8', function (err, data) {
+    xsltConfig = JSON.parse(data);
 
-    //Get XSLT location
-    let xsltConfig = '';
-    fs.readFile(configJSONPath, 'utf8', function (err, data) {
-      xsltConfig = JSON.parse(data);
+    //Get appropiate XSLT for xmlType
+    fs.readFile(xsltConfig[xmlType].path, 'utf8', function (err, data) {
+      xslt = data;
 
-      //Get appropiate XSLT for xmlType
-      fs.readFile(xsltConfig[xmlType].path, 'utf8', function (err, data) {
-        xslt = data;
-
-        // Get actual XML that has to be converted to HTML
-        axios.get(url).then( response => {      
-          let xml = response.data;     
+      // Get attachment XML that has to be converted to HTML
+      axios.get(attachmentUrl).then( response => {      
+        let xml = response.data;     
+        
+        // Get configuration for the service that converts XML to HTML
+        // TODO Why doesn't /gwv/gawati.json work?
+        axios.get('http://localhost:9005/gwv/gawati.json').then(response => {      
           
-          // Get configuration for the service that converts XML to HTML
-          // TODO Why doesn't /gwv/gawati.json work?
-          axios.get('http://localhost:9005/gwv/gawati.json').then(response => {      
-            
-            // Send XML for conversion to service
-            axios({
-                method: 'post',
-                url: appconstants.XML_HTML_CONVERTER,
-                data:  Querystring.stringify({ 
-                  "input_file" : xml,
-                  "input_xslt" : xslt,
-                  "input_params" : ''
-                }),
-                headers: {
-                  'Content-type': 'application/x-www-form-urlencoded'
-                }
-              }).then(response => {           
-                res.status(200).send(response.data);
-              }).catch(error => {
-                console.error("Error in xml to html conversion using provided XSLT " + error);
-              }); 
+          // Send XML for conversion to service
+          axios({
+              method: 'post',
+              url: appconstants.XML_HTML_CONVERTER,
+              data:  Querystring.stringify({ 
+                "input_file" : xml,
+                "input_xslt" : xslt,
+                "input_params" : ''
+              }),
+              headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+              }
+            }).then(response => {           
+              res.status(200).send(response.data);
+            }).catch(error => {
+              console.error("Error in xml to html conversion using provided XSLT " + error);
+            }); 
 
-          });
+        });
 
-        }).catch( error => {
-          console.error("Error in getting XML to be converted " + error);
-        }); 
-      });
+      }).catch( error => {
+        console.error("Error in getting XML to be converted " + error);
+      }); 
     });
-    
-  }).catch(error => {
-    console.log("Error in getting XML that contains metadata " + error);
   });
+    
+  
 });
 
 module.exports = router;

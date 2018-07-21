@@ -5,7 +5,7 @@
 	"akomantoso":{
 		"path": "configs/xslt/akomantoso.xslt"
 	},
-	"xml":{
+	"sample":{
 		"path": "configs/xslt/sample.xslt"
 	}
 }
