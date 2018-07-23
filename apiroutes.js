@@ -51,30 +51,25 @@ router.get('/xmlToHtml',(req, res, next) => {
       // Get attachment XML that has to be converted to HTML
       axios.get(attachmentUrl).then( response => {      
         let xml = response.data;     
-        
-        // Get configuration for the service that converts XML to HTML
-        // TODO Why doesn't /gwv/gawati.json work?
-        axios.get('http://localhost:9005/gwv/gawati.json').then(response => {      
           
-          // Send XML for conversion to service
-          axios({
-              method: 'post',
-              url: appconstants.XML_HTML_CONVERTER,
-              data:  Querystring.stringify({ 
-                "input_file" : xml,
-                "input_xslt" : xslt,
-                "input_params" : ''
-              }),
-              headers: {
-                'Content-type': 'application/x-www-form-urlencoded'
-              }
-            }).then(response => {           
-              res.status(200).send(response.data);
-            }).catch(error => {
-              console.error("Error in xml to html conversion using provided XSLT " + error);
-            }); 
+        // Send XML for conversion to service
+        axios({
+            method: 'post',
+            url: appconstants.XML_HTML_CONVERTER,
+            data:  Querystring.stringify({ 
+              "input_file" : xml,
+              "input_xslt" : xslt,
+              "input_params" : ''
+            }),
+            headers: {
+              'Content-type': 'application/x-www-form-urlencoded'
+            }
+          }).then(response => {           
+            res.status(200).send(response.data);
+          }).catch(error => {
+            console.error("Error in xml to html conversion using provided XSLT " + error);
+          }); 
 
-        });
 
       }).catch( error => {
         console.error("Error in getting XML to be converted " + error);
