@@ -36,8 +36,8 @@ router.get('/xmlToHtml',(req, res, next) => {
   let xmlType = "sample"; // Will be later inferred from XML structure
   
   let configJSONPath = path.join(
-    "configs", 
-    "xmlTypes.json"
+    appconstants.CONFIG_FOLDER, 
+    appconstants.XML_TYPES_JSON
   );  
   //Get XSLT config file location
   let xsltConfig = '';
