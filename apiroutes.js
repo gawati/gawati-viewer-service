@@ -19,7 +19,7 @@ winston.level = process.env.LOG_LEVEL || 'debug' ;
 var router = express.Router();
 
 router.get('/docxTohtml', (req, res, next) => {
-  let url = encodeURI(req.query.docLink);
+  let url = req.query.docLink;
   axios.get(url,{responseType: 'arraybuffer'}).then(response => {
     mammoth.convertToHtml(response.data)
     .then(function(result){
@@ -27,12 +27,12 @@ router.get('/docxTohtml', (req, res, next) => {
     }).done();
   }).catch(error => {
     console.log(error);
+    res.send(error);
   });  
 });
 
 router.get('/xmlToHtml',(req, res, next) => { 
-  
-  let attachmentUrl = encodeURI(req.query.docLink);
+  let attachmentUrl = req.query.docLink;
   let xmlType = "sample"; // Will be later inferred from XML structure
   
   let configJSONPath = path.join(
